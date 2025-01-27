@@ -12,4 +12,4 @@ class Series(Base):
     image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    posts = relationship("Post", back_populates="series")
+    posts = relationship("Post", back_populates="series", cascade="all, delete")

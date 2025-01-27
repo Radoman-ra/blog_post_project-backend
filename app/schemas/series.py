@@ -3,8 +3,8 @@ from datetime import datetime
 
 class SeriesBase(BaseModel):
     title: str
-    description: str
-    image_url: str
+    description: str | None = None
+    image_url: str | None = None
 
 class SeriesCreate(SeriesBase):
     pass

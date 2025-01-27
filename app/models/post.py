@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Post(Base):
@@ -12,3 +13,5 @@ class Post(Base):
     content = Column(Text, nullable=False)
     order_in_series = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    series = relationship("Series", back_populates="posts")

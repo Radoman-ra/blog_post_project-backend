@@ -3,7 +3,7 @@ from datetime import datetime
 
 class PostBase(BaseModel):
     title: str
-    image_url: str
+    image_url: str | None = None
     content: str
     order_in_series: int
 
