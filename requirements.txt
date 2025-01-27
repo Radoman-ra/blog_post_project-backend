@@ -5,3 +5,5 @@ alembic
 psycopg2
 pydantic[email]
 python-dotenv
+pydantic-settings
+pydantic
