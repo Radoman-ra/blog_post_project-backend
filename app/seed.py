@@ -12,7 +12,7 @@ from faker import Faker
 from sqlalchemy.orm import Session
 
 from database import SessionLocal, engine, Base
-from app.models import Post, Series
+from models import Post, Series
 
 
 def seed_data():
