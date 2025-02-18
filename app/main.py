@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from dotenv import load_dotenv
 
+from pydantic import BaseModel
 from app.database import engine, Base, get_db
 from app.routers import posts, series
 from app.seed import seed_data
@@ -16,10 +17,9 @@ load_dotenv()
 
 app = FastAPI(
     title="copy-of-wanago.io API",
-    description="API для работы с постами и сериями блога",
+    description="API for copy-of-wanago.io project",
     version="1.0.0",
 )
-
 
 origins = ["http://localhost:3000"]
 app.add_middleware(
@@ -38,16 +38,15 @@ if not os.path.exists(static_dir):
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
-@app.get("/api/image/{image_name}", summary="Получение изображения")
+@app.get("/api/image/{image_name}", summary="Get images")
 def get_image(image_name: str):
-
     file_path = os.path.join("app", "static", "images", image_name)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(file_path)
 
 
-@app.post("/pingdb", summary="Проверка подключения к базе данных")
+@app.post("/pingdb", summary="Check database connection")
 def ping_db(db: Session = Depends(get_db)):
     try:
         result = db.execute(text("SELECT 1")).scalar()
@@ -63,18 +62,22 @@ def ping_db(db: Session = Depends(get_db)):
         )
 
 
-@app.post("/seed", summary="Заполнить базу данных тестовыми данными")
-def seed_database():
+class SeedRequest(BaseModel):
+    num_posts: int = 20
+
+
+@app.post("/seed", summary="Seed database")
+def seed_database(seed_request: SeedRequest):
     try:
-        seed_data()
+        seed_data(num_posts=seed_request.num_posts)
         return {"status": "Database seeded successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Seeding error: {str(e)}")
 
 
-@app.get("/", summary="Главная страница")
+@app.get("/", summary="Main page")
 def read_root():
-    return {"message": "Добро пожаловать в API copy-of-wanago.io"}
+    return {"message": "Welcome to copy-of-wanago.io API"}
 
 
 Base.metadata.create_all(bind=engine)
