@@ -1,10 +1,12 @@
 import os
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from dotenv import load_dotenv
 
 from app.database import engine, Base, get_db
 from app.routers import posts, series
@@ -18,10 +20,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
-origins = [
-    "http://localhost:3000",
-]
 
+origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -29,6 +29,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+static_dir = "app/static"
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)
+    print(f"Directory '{static_dir}' created.")
+
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+@app.get("/api/image/{image_name}", summary="Получение изображения")
+def get_image(image_name: str):
+
+    file_path = os.path.join("app", "static", "images", image_name)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+    return FileResponse(file_path)
 
 
 @app.post("/pingdb", summary="Проверка подключения к базе данных")
