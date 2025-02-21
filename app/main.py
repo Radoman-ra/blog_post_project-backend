@@ -75,11 +75,6 @@ def seed_database(seed_request: SeedRequest):
         raise HTTPException(status_code=500, detail=f"Seeding error: {str(e)}")
 
 
-@app.get("/", summary="Main page")
-def read_root():
-    return {"message": "Welcome to copy-of-wanago.io API"}
-
-
 Base.metadata.create_all(bind=engine)
 
 app.include_router(posts.router)
