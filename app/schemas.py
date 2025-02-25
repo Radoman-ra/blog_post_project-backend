@@ -1,6 +1,6 @@
-from datetime import datetime
-from typing import Optional, List
 from pydantic import BaseModel
+from typing import Optional, List
+from datetime import datetime
 
 
 class SeriesBase(BaseModel):
@@ -13,6 +13,10 @@ class SeriesCreate(SeriesBase):
     pass
 
 
+class SeriesUpdate(SeriesBase):
+    pass
+
+
 class Series(SeriesBase):
     id: int
     created_at: datetime
@@ -21,7 +25,6 @@ class Series(SeriesBase):
         from_attributes = True
 
 
-# Post Schemas
 class PostBase(BaseModel):
     title: str
     content: str
@@ -29,6 +32,14 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
+    series_id: Optional[int] = None
+    order_in_series: Optional[int] = None
+
+
+class PostUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    image_url: Optional[str] = None
     series_id: Optional[int] = None
     order_in_series: Optional[int] = None
 
